@@ -1,0 +1,189 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+
+/* --- 1. GLOBAL ROOT VARIABLES --- */
+/* Added these to make theme management easier across MedIQ */
+:root {
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --primary-accent: #6366f1;
+  --text-main: #f1f5f9;
+  --text-dim: #94a3b8;
+}
+
+/* --- 2. CORE RESET --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-dark); /* Ensures no white flash on scroll */
+}
+
+body {
+  font-family: "Manrope", sans-serif;
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* --- 3. STICKY NAVIGATION HEADER --- */
+.sticky_header {
+  width: 100%;
+  height: 85px;
+  line-height: 85px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Lowered from 9999 to let Modals stay on top */
+  background: rgba(15, 23, 42, 0.85); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); /* Support for Safari */
+  border-bottom: 1px solid #1e293b;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+/* --- 4. MOBILE NAVIGATION --- */
+@media only screen and (max-width: 768px) {
+  .navigation {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1001; 
+    background: rgba(15, 23, 42, 0.95);
+    display: none;
+  }
+
+  .menu {
+    width: 75%; /* Percentage-based width for better mobile responsiveness */
+    max-width: 300px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--bg-card);
+    z-index: 1002; 
+    display: flex; /* Added display flex to make centering work */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    line-height: 3;
+    border-left: 1px solid #334155;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+  }
+
+  .show__menu {
+    display: block !important; /* Ensure it overrides display: none */
+    animation: slideIn 0.4s ease-out forwards;
+  }
+}
+
+/* --- 5. TOAST NOTIFICATIONS --- */
+.Toastify__toast-container {
+  z-index: 10000 !important; 
+}
+
+.Toastify__toast {
+  font-family: "Manrope", sans-serif; 
+  border-radius: 12px !important;
+  background: var(--bg-card) !important;
+  color: #fff !important;
+  border: 1px solid #334155 !important;
+}
+
+/* --- 6. DATA CONSENT MODAL --- */
+.consent-backdrop {
+  position: fixed;
+  inset: 0; /* Shorthand for top, left, bottom, right: 0 */
+  background: rgba(2, 6, 23, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.consent-modal {
+  background: var(--bg-card);
+  width: 440px;
+  max-width: 90%;
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid #334155;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  animation: modalPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.consent-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 14px;
+  background: var(--bg-dark);
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.consent-option:hover {
+  border-color: var(--primary-accent);
+  background: #1e293b;
+}
+
+/* --- 7. BUTTONS & LINKS --- */
+.consent-actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.primary {
+  background: var(--primary-accent);
+  color: white;
+  padding: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.secondary {
+  background: #334155;
+  color: var(--text-dim);
+  padding: 12px;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.secondary:hover {
+  color: white;
+  background: #475569;
+}
+
+/* --- 8. ANIMATIONS --- */
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
