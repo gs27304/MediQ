@@ -2,44 +2,46 @@ import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 
-const app=express()
-
-app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true
-}))
-app.use(express.json())
-app.use(cookieParser())
-
-
-
+// Route Imports
 import authRouter from "./routes/auth.route.js"
 import userRouter from "./routes/user.route.js"
 import doctorRouter from "./routes/doctor.route.js"
 import reviewRouter from "./routes/review.route.js"
 import bookingRouter from "./routes/booking.route.js"
-import gemini from "./routes/gpt.route.js"
-import newsRouter from ".//routes/news.router.js"
+import geminiRouter from "./routes/gemini.js" // Updated to point to your new gemini.js file
+import newsRouter from "./routes/news.router.js"
 
-app.use("/api/v1/auth",authRouter)
+const app = express()
 
-app.use("/api/v1/users",userRouter)
+// 1. Middleware Configuration
+app.use(cors({
+    // Uses the origin from your .env (likely http://localhost:5173)
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173", 
+    credentials: true
+}))
+
+// Standard MERN security and parsing limits
+app.use(express.json({ limit: "16kb" })) 
+app.use(express.urlencoded({ extended: true, limit: "16kb" }))
+app.use(express.static("public"))
+app.use(cookieParser())
+
+// 2. API Route Declarations
+app.use("/api/v1/auth", authRouter)
+app.use("/api/v1/users", userRouter)
 app.use("/api/v1/doctors", doctorRouter)
-
-
-//check this
-// app.get('/api/v1/user/profile/me', (req, res) => {
-//     res.send('User profile data');
-//   });
-
 app.use("/api/v1/reviews", reviewRouter)
 app.use("/api/v1/bookings", bookingRouter)
-app.use("/api/v1/gemini", gemini)
-app.use("/api/v1/news",newsRouter)
+app.use("/api/v1/news", newsRouter)
 
-// app.get("/",(req,res)=>{
-//     res.send("testing testing")
-// })
+/** * AI Chatbot Route
+ * This matches your frontend config: http://localhost:8000/api/v1/gemini/chat
+ */
+app.use("/api/v1/gemini", geminiRouter)
 
+// Systems Health Check
+app.get("/api/v1/health", (req, res) => {
+    res.status(200).json({ status: "MediQ Systems Online" })
+})
 
-export {app}
+export { app }
