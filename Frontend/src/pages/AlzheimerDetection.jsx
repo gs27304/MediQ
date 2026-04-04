@@ -119,12 +119,12 @@ const AlzheimerDetection = () => {
               to="/contact"
               className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors border-b border-indigo-400/20"
             >
-              Contact Health-E Support
+              Contact MediQ Support
             </Link>
           </p>
           <div className="mt-6 flex justify-center items-center gap-6 opacity-30 grayscale brightness-200">
              {/* Localized trust badges could go here */}
-             <p className="text-[10px] text-slate-100 font-black tracking-[0.4em] uppercase">Secure • Verified • Health-E India</p>
+             <p className="text-[10px] text-slate-100 font-black tracking-[0.4em] uppercase">Secure • Verified • MediQ India</p>
           </div>
         </div>
       </div>

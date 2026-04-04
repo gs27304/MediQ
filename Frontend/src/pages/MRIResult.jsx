@@ -156,7 +156,7 @@ const MRIResult = () => {
               to="/contact"
               className="text-indigo-400 hover:text-indigo-300 font-black transition-colors border-b border-indigo-400/20 inline-flex items-center gap-1"
             >
-              <BiSupport /> Health-E Support
+              <BiSupport /> MediQ Support
             </Link>
           </p>
         </div>

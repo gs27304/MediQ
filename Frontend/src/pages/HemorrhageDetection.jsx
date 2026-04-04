@@ -123,12 +123,12 @@ const HemorrhageDetection = () => {
               to="/contact"
               className="text-red-500 hover:text-red-400 font-bold transition-colors border-b border-red-500/10"
             >
-              Contact Health-E Support
+              Contact MediQ Support
             </Link>
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 opacity-30">
              <div className="h-[1px] w-32 bg-slate-800"></div>
-             <p className="text-[10px] text-slate-100 font-black tracking-[0.4em] uppercase">Emergency Services • Health-E India</p>
+             <p className="text-[10px] text-slate-100 font-black tracking-[0.4em] uppercase">Emergency Services • MediQ India</p>
           </div>
         </div>
       </div>

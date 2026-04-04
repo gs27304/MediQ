@@ -125,12 +125,12 @@ const TumorDetection = () => {
               to="/contact"
               className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors border-b border-indigo-400/20"
             >
-              Contact Health-E Support
+              Contact MediQ Support
             </Link>
           </p>
           <div className="mt-10 flex flex-col items-center gap-3 opacity-20 grayscale brightness-200">
              <div className="h-[1px] w-32 bg-slate-800"></div>
-             <p className="text-[10px] text-slate-100 font-black tracking-[0.4em] uppercase text-center">Secure • Verified • Health-E India</p>
+             <p className="text-[10px] text-slate-100 font-black tracking-[0.4em] uppercase text-center">Secure • Verified • MediQ India</p>
           </div>
         </div>
       </div>

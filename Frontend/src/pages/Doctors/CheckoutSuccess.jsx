@@ -54,7 +54,7 @@ const CheckoutSuccess = () => {
 
       {/* Decorative Footer Context */}
       <p className="mt-10 text-slate-600 text-xs font-medium tracking-widest uppercase">
-        Securely processed by Health-E India
+        Securely processed by MediQ India
       </p>
     </div>
   );

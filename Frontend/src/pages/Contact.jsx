@@ -227,7 +227,7 @@ const Contact = () => {
           {/* Support Micro-copy */}
           <div className="mt-8 text-center border-t border-slate-800 pt-6">
              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em]">
-               Average response time: 4 Hours • Health-E India
+               Average response time: 4 Hours • MediQ India
              </p>
           </div>
         </div>

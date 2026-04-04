@@ -76,7 +76,7 @@ const Home = () => {
                 <span className="text-indigo-500 italic">Redefined.</span>
               </h1>
               <p className="text-slate-400 text-lg leading-relaxed mb-10 max-w-xl">
-                Health-E is Bharat's pioneering medical ecosystem. Connect with top-rated 
+                MediQ is Bharat's pioneering medical ecosystem. Connect with top-rated 
                 specialists across the country via virtual clinics or physical visits. 
                 Experience a modern, user-friendly approach to complete wellness.
               </p>

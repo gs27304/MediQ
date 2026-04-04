@@ -81,7 +81,7 @@ const Tabs = ({ tab, setTab }) => {
       <div className="hidden lg:flex flex-col p-6 bg-[#1e293b] border border-slate-700 shadow-2xl items-center h-fit sticky top-10 rounded-2xl w-[280px]">
         <div className="w-full mb-8 border-b border-slate-700 pb-4">
             <h2 className="text-slate-100 font-black text-xl tracking-wide uppercase px-2">Doctor Portal</h2>
-            <p className="text-slate-500 text-[10px] px-2 font-bold uppercase tracking-widest mt-1">Health-E India</p>
+            <p className="text-slate-500 text-[10px] px-2 font-bold uppercase tracking-widest mt-1">MediQ India</p>
         </div>
 
         <div className="w-full">
@@ -122,7 +122,7 @@ const Tabs = ({ tab, setTab }) => {
         } border-r border-slate-800`}
       >
         <div className="flex items-center justify-between p-6 border-b border-slate-800">
-          <h2 className="text-xl font-black text-slate-100 italic">Health-E</h2>
+          <h2 className="text-xl font-black text-slate-100 italic">MediQ</h2>
           <BiArrowBack className="w-6 h-6 cursor-pointer text-slate-400 hover:text-white" onClick={toggleMobileMenu} />
         </div>
 

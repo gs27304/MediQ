@@ -10,11 +10,11 @@ const PageViewTracker = () => {
 
     // Capitalize first letter for browser tab
     const formattedSegment = lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
-    const titleName = `Health-E | ${formattedSegment}`;
+    const titleName = `MediQ | ${formattedSegment}`;
     document.title = titleName;
 
     // Lowercase for data layer
-    const dataLayerPageName = `health-e | ${lastSegment.toLowerCase()}`;
+    const dataLayerPageName = `MediQ | ${lastSegment.toLowerCase()}`;
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({

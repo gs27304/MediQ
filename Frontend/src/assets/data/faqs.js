@@ -1,8 +1,8 @@
 export const faqs = [
   {
-    question: "What exactly is Health-E and how does it help me?",
+    question: "What exactly is MediQ and how does it help me?",
     content:
-      "Health-E is a smart healthcare platform designed to bridge the gap between patients and doctors. Whether you need an in-person visit or a virtual consultation, our platform allows you to discover specialists, book appointments instantly, and manage your health records all in one place.",
+      "MediQ is a smart healthcare platform designed to bridge the gap between patients and doctors. Whether you need an in-person visit or a virtual consultation, our platform allows you to discover specialists, book appointments instantly, and manage your health records all in one place.",
   },
   {
     question: "How do I book an appointment with a specialist?",
@@ -17,7 +17,7 @@ export const faqs = [
   {
     question: "Do you offer virtual consultations?",
     content:
-      "Yes! Health-E supports high-quality virtual sessions. If you cannot visit the clinic in person, you can book an online consultation and connect with your medical professional via our secure integrated video/chat interface from the comfort of your home.",
+      "Yes! MediQ supports high-quality virtual sessions. If you cannot visit the clinic in person, you can book an online consultation and connect with your medical professional via our secure integrated video/chat interface from the comfort of your home.",
   },
   {
     question: "How does the MRI diagnosis assistance work?",

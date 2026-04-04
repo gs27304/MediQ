@@ -110,7 +110,7 @@ const Signup = () => {
       });
 
       setLoading(false);
-      toast.success("Registration Successful! Welcome to Health-E Bharat.");
+      toast.success("Registration Successful! Welcome to MediQ Bharat.");
       navigate("/login");
     } catch (error) {
       if (error.statusCode === 500) {

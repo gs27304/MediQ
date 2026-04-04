@@ -100,7 +100,7 @@ const Login = () => {
       });
 
       setLoading(false);
-      toast.success("Welcome back to Health-E India!");
+      toast.success("Welcome back to MediQ India!");
       navigate("/home");
     } catch (error) {
       if (error.statusCode === 500)
@@ -172,7 +172,7 @@ const Login = () => {
             <p className="mt-8 text-slate-500 text-center text-sm font-medium">
               Naye user hain?{" "}
               <Link to="/register" className="text-indigo-400 font-black hover:text-indigo-300 border-b border-indigo-400/20 transition-all">
-                Join Health-E India
+                Join MediQ India
               </Link>
             </p>
           </form>

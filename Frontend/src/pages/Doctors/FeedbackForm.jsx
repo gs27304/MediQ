@@ -115,7 +115,7 @@ const FeedbackForm = () => {
           {loading ? <HashLoader size={25} color="#fff" /> : `Submit Final Review`}
         </button>
         <p className="text-center text-slate-600 text-[10px] mt-4 font-bold uppercase tracking-[0.2em]">
-          Secure & Anonymous Feedback • Health-E India
+          Secure & Anonymous Feedback • MediQ India
         </p>
       </div>
     </form>

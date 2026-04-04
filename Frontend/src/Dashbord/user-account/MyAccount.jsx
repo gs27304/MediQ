@@ -26,7 +26,7 @@ const MyAccount = () => {
 
   const handleDeleteAccount = async () => {
     const confirmDelete = window.confirm(
-      "Kya aap sure hain? This will permanently delete your Health-E account and medical history. This cannot be undone."
+      "Kya aap sure hain? This will permanently delete your MediQ account and medical history. This cannot be undone."
     );
   
     if (confirmDelete) {
