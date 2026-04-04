@@ -35,7 +35,8 @@ const bookingSchema=new mongoose.Schema({
 
     session:{
         type:String,
-    }
+    },
+    
 
 },{timestamps:true})
 

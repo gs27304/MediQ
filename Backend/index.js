@@ -3,9 +3,7 @@ import { app } from "./src/app.js";
 import connectDB from "./src/db/dbConnection.js";
 
 // Load environment variables immediately
-dotenv.config({
-    path: "./.env"
-});
+dotenv.config();
 
 const PORT = process.env.PORT || 8000; // Updated to match your config.js (8000)
 

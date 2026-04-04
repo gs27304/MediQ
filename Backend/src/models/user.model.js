@@ -45,6 +45,18 @@ const userSchema=new mongoose.Schema({
             type:mongoose.Schema.Types.ObjectId,
             ref:"Appointment"
         }]
+    ,
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number], // Note: MongoDB requires [longitude, latitude] order
+            default: [0, 0] 
+        }
+    }
 })
 
 userSchema.pre("save", async function(next){
@@ -77,5 +89,7 @@ userSchema.methods.generatejwttoken=function(){
             expiresIn:process.env.JWT_EXPIRY
     })
 }
+
+userSchema.index({ location: "2dsphere" });
 
 export const User=mongoose.model("User",userSchema)

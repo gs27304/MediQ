@@ -6,7 +6,7 @@ import axios from 'axios'
 export const getNews =asyncHandler(async(req,res)=>{
     let page=1
     let pageSize=35
-    let url = `https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey=${process.env.apiKey}&page=${page}&pageSize=${pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=us&category=health&apiKey=${process.env.apiKey}&page=${page}&pageSize=${pageSize}`;
 
     
     await axios.get(url)
