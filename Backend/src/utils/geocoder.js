@@ -1,36 +1,32 @@
-// utils/geocoder.js
-
 export const getCoordinatesFromAddress = async (address) => {
     try {
+        console.log("➡️ [Geocoder] Received address:", address);
         if (!address) return [0, 0];
 
-        // Using OpenStreetMap's free Geocoding API
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
         
         const response = await fetch(url, {
             headers: {
-                // Nominatim requires a User-Agent header for free access
-                'User-Agent': 'MediQ-App (your_email@example.com)' 
+                // IMPORTANT: Replace with a real email, otherwise they block you!
+                'User-Agent': 'MediQ-App (your_actual_email@gmail.com)' 
             }
         });
         
         const data = await response.json();
+        console.log("➡️ [Geocoder] API Data:", data.length > 0 ? "Found Results" : "No Results");
 
-        // If the API found the location
         if (data && data.length > 0) {
-            // Nominatim returns lat and lon as strings, we must parse them
             const lat = parseFloat(data[0].lat);
             const lng = parseFloat(data[0].lon);
-            
-            // VERY IMPORTANT: MongoDB requires Longitude FIRST
+            console.log("➡️ [Geocoder] Success! Returning:", [lng, lat]);
             return [lng, lat]; 
         }
 
-        // Fallback if address is too vague or not found
         return [0, 0]; 
 
     } catch (error) {
-        console.error("Geocoding Error: ", error);
+        // If this prints "fetch is not defined", you need to install node-fetch or update Node.js
+        console.error("❌ [Geocoder] Fatal Error:", error.message);
         return [0, 0];
     }
 };

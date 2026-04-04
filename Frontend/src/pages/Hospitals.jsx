@@ -9,10 +9,10 @@ const Hospitals = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const { token } = useContext(authContext);
+    // 1. Extract 'user' from context alongside 'token'
+    const { token, user } = useContext(authContext);
     const navigate = useNavigate();
 
-    // A sleek fallback image if the hospital document has no 'photo'
     const fallbackImage = "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?q=80&w=800&auto=format&fit=crop";
 
     useEffect(() => {
@@ -21,37 +21,76 @@ const Hospitals = () => {
             return;
         }
 
+        // Helper 1: Fetch Hospitals WITH sorting (requires lat/lng)
+        const fetchSortedHospitals = (latitude, longitude) => {
+            fetch(`${BASE_URL}/hospitals?lat=${latitude}&lng=${longitude}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(res => res.json())
+            .then(json => {
+                setData(json.data);
+                setLoading(false);
+            })
+            .catch(() => {
+                setError("Failed to fetch nearby facilities.");
+                setLoading(false);
+            });
+        };
+
+        // Helper 2: Fetch ALL Hospitals WITHOUT sorting (absolute worst-case fallback)
+        const fetchUnsortedHospitals = () => {
+            fetch(`${BASE_URL}/hospitals`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(res => res.json())
+            .then(json => {
+                setData(json.data);
+                setLoading(false);
+            })
+            .catch(() => {
+                setError("Failed to fetch facilities.");
+                setLoading(false);
+            });
+        };
+
+        // 2. Safely extract user's saved coordinates from DB (Remember: [lng, lat])
+        const savedLng = user?.location?.coordinates?.[0];
+        const savedLat = user?.location?.coordinates?.[1];
+        
+        // Ensure they aren't [0,0] (Null Island)
+        const hasValidSavedLocation = savedLat && savedLng && (savedLat !== 0 || savedLng !== 0);
+
+        // 3. Centralized Fallback Logic
+        const handleLocationFallback = () => {
+            if (hasValidSavedLocation) {
+                // Radial sort based on their registered Home Address!
+                fetchSortedHospitals(savedLat, savedLng); 
+            } else {
+                // If geocoding failed during signup too, just show all randomly
+                fetchUnsortedHospitals(); 
+            }
+        };
+
+        // 4. Trigger Browser GPS
         if (!navigator.geolocation) {
-            setError("Geolocation is not supported by your browser");
-            setLoading(false);
+            handleLocationFallback();
             return;
         }
 
         navigator.geolocation.getCurrentPosition(
             (pos) => {
-                fetch(`${BASE_URL}/hospitals?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}` 
-                    }
-                })
-                    .then(res => res.json())
-                    .then(json => {
-                        setData(json.data);
-                        setLoading(false);
-                    })
-                    .catch(() => {
-                        setError("Failed to fetch nearby facilities.");
-                        setLoading(false);
-                    });
+                // GPS ALLOWED: Sort from their exact live physical location
+                fetchSortedHospitals(pos.coords.latitude, pos.coords.longitude);
             },
             () => {
-                setError("Please enable location access to find nearby hospitals.");
-                setLoading(false);
+                // GPS DENIED: Fallback to their registered Address!
+                handleLocationFallback();
             }
         );
-    }, [token, navigate]);
+    }, [token, navigate, user]);
 
     if (loading) return <div className="flex items-center justify-center h-screen"><HashLoader color="#4f46e5" /></div>;
+
 
     return (
         <div className="container py-16 px-6">
