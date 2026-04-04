@@ -16,78 +16,61 @@ const Doctor = () => {
   const [debounceQuery, setDebounceQuery] = useState("");
   const [searchStarted, setSearchStarted] = useState(false);
 
-  // Ensure dataLayer exists
   window.dataLayer = window.dataLayer || [];
 
-  // Event: search overlay opened
   const triggerSearchOverlayEvent = () => {
     window.dataLayer.push({
       event: "web.search.overlay",
-      web: {
-        webInteractionDetails: {
-          interactionType: "search",
-          interactionAction: "overlay open",
-        },
-      },
+      web: { webInteractionDetails: { interactionType: "search", interactionAction: "overlay open" } },
     });
   };
 
-  // Event: push search results event
   const triggerSearchResultsLoadedEvent = (searchQuery) => {
     if (!searchQuery) return;
-
     window.dataLayer.push({
       event: "web.search.loadResults",
       web: {
-        webPageDetails: {
-          pageName: "specialist search results",
-          pageType: "search result",
-          siteSection: "medical experts"
-        },
-        search: {
-          searchTerm: searchQuery.toLowerCase()
-        }
+        webPageDetails: { pageName: "symptom search results", pageType: "search result", siteSection: "medical experts" },
+        search: { searchTerm: searchQuery.toLowerCase() }
       }
     });
   };
 
-  // Manual Search Execution
   const handleSearch = () => {
     const trimmed = query.trim();
     setQuery(trimmed);
     triggerSearchResultsLoadedEvent(trimmed);
   };
 
-  // Debounce logic for real-time filtering
   useEffect(() => {
     const timeout = setTimeout(() => {
       const trimmed = query.trim();
       setDebounceQuery(trimmed);
-
       if (trimmed !== "") {
         triggerSearchResultsLoadedEvent(trimmed);
       }
-    }, 500);
+    }, 800); // Increased debounce to 800ms so it doesn't hit Superplane on every keystroke
 
     return () => clearTimeout(timeout);
   }, [query]);
 
+  // YAHAN DHYAN DEIN: Is API endpoint ko aapko apne backend route ya direct Superplane Webhook URL se replace karna pad sakta hai, depending on aap Superplane kaise connect karte ho.
   const {
     data: doctors,
     loading,
     error,
-  } = useFetchData(`${BASE_URL}/doctors?query=${debounceQuery}`);
+  } = useFetchData(`${BASE_URL}/doctors/smart-match?symptom=${debounceQuery}`);
 
   return (
     <div className="bg-[#0f172a] min-h-screen">
-      {/* Search Hero Section */}
-      <section className="bg-[#1e293b] py-16 border-b border-slate-800">
+      {/* Search Hero Section - Yahan padding top (pt-32) aur padding bottom (pb-16) theek kar diya gaya hai */}
+      <section className="bg-[#1e293b] pt-32 pb-16 border-b border-slate-800">
         <div className="container text-center">
           <h2 className="text-4xl lg:text-5xl font-black text-slate-100 tracking-tight mb-4">
-            Find Your Specialist
+            Tell Us What's Wrong
           </h2>
           <p className="text-slate-400 max-w-lg mx-auto mb-10 font-medium">
-            Consult with top-rated medical experts in India. Search by name, department, or health concern.
+            Describe your symptoms or health issue, and our AI will instantly match you with the right specialist in your area.
           </p>
 
           <div className="max-w-[680px] mx-auto relative group">
@@ -96,7 +79,7 @@ const Doctor = () => {
               <input
                 type="search"
                 className="py-4 pl-4 pr-2 bg-transparent w-full outline-none text-slate-100 placeholder:text-slate-500 font-medium"
-                placeholder="Ex: Cardiologist, Neurologist, or Dr. Sharma..."
+                placeholder="Ex: I have a severe headache and blurry vision since morning..."
                 value={query}
                 onFocus={() => {
                   if (!searchStarted) {
@@ -110,16 +93,16 @@ const Doctor = () => {
                 className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-xl font-black transition-all shadow-lg shadow-indigo-900/40"
                 onClick={handleSearch}
               >
-                Search
+                Find Doctor
               </button>
             </div>
             
-            {/* Quick Filter Tags Placeholder */}
+            {/* Updated Quick Filter Tags */}
             <div className="flex gap-3 mt-4 justify-center">
-                <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Popular:</span>
-                <button onClick={() => setQuery("Physician")} className="text-[10px] text-slate-400 hover:text-indigo-400 font-bold uppercase tracking-wider">Physician</button>
-                <button onClick={() => setQuery("Surgeon")} className="text-[10px] text-slate-400 hover:text-indigo-400 font-bold uppercase tracking-wider">Surgeon</button>
-                <button onClick={() => setQuery("Dentist")} className="text-[10px] text-slate-400 hover:text-indigo-400 font-bold uppercase tracking-wider">Dentist</button>
+                <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Common:</span>
+                <button onClick={() => setQuery("Severe back pain")} className="text-[10px] text-slate-400 hover:text-indigo-400 font-bold uppercase tracking-wider">Back Pain</button>
+                <button onClick={() => setQuery("High fever and chills")} className="text-[10px] text-slate-400 hover:text-indigo-400 font-bold uppercase tracking-wider">Fever</button>
+                <button onClick={() => setQuery("Skin rash and itching")} className="text-[10px] text-slate-400 hover:text-indigo-400 font-bold uppercase tracking-wider">Skin Issue</button>
             </div>
           </div>
         </div>
@@ -131,20 +114,20 @@ const Doctor = () => {
           {loading && <div className="flex justify-center py-20"><Loader /></div>}
           {error && <Error />}
           
-          {!loading && !error && (
+          {!loading && !error && doctors && (
             <>
               <div className="flex items-center justify-between mb-10 px-2">
                 <h3 className="text-slate-100 font-bold text-lg">
-                  {debounceQuery ? `Results for "${debounceQuery}"` : "Verified Experts Near You"}
+                  {debounceQuery ? `Specialists for your symptoms` : "Verified Experts Near You"}
                 </h3>
                 <span className="bg-slate-800 text-slate-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-tighter border border-slate-700">
-                  {doctors.length} Doctors Found
+                  {doctors.length || 0} Doctors Found
                 </span>
               </div>
 
-              {doctors.length === 0 ? (
+              {!doctors || doctors.length === 0 ? (
                 <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-800">
-                   <p className="text-slate-500 font-medium italic italic">No matching experts found. Try searching for a different specialization.</p>
+                   <p className="text-slate-500 font-medium italic">No matching experts found. Try explaining your symptoms differently.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
