@@ -15,7 +15,8 @@ import MriDiagnosis from "../pages/MriDiagnosis";
 import TumorDetection from "../pages/TumorDetection";
 import AlzheimerDetection from "../pages/AlzheimerDetection";
 import HemorrhageDetection from "../pages/HemorrhageDetection";
-import Result from "../pages/MRIResult";
+import Result from "../pages/MRIResult"; 
+import Hospitals from "../pages/Hospitals";
 
 function Routers() {
    
@@ -35,7 +36,8 @@ function Routers() {
       <Route path="/tumor-detection" element={<TumorDetection />} />
       <Route path="/alzheimer-detection" element={<AlzheimerDetection />} />
       <Route path="/hemorrhage-detection" element={<HemorrhageDetection/>} />
-      <Route path="/result" element={<Result/>} />
+      <Route path="/result" element={<Result/>} /> 
+      <Route path="/hospitals" element={<Hospitals />} />
       <Route
         path="/users/profile/me"
         element={

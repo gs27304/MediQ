@@ -10,6 +10,7 @@ import { BASE_URL } from "../../config";
 const navLinks = [
   { path: "/home", display: "Portal Home" },
   { path: "/doctors", display: "Specialist Hub" },
+  { path: "/hospitals", display: "Nearby Hospital" },
   { path: "/services", display: "Core Protocols" },
   { path: "/blog", display: "Clinical Ledger" },
   { path: "/contact", display: "Neural Support" },

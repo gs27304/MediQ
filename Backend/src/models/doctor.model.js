@@ -91,7 +91,18 @@ const doctorSchema=new mongoose.Schema({
             type:mongoose.Schema.Types.ObjectId,
             ref:"Appointment"
         }
-    ]
+    ],
+    location: {
+    type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point'
+    },
+    coordinates: {
+        type: [Number], // Note: MongoDB requires [longitude, latitude] order
+        default: [0, 0] 
+    }
+}
 
 })
 
@@ -125,5 +136,7 @@ doctorSchema.pre("findOneAndUpdate", async function(next) {
 
     next();
 });
+
+doctorSchema.index({ location: "2dsphere" });
 
 export const Doctor=mongoose.model("Doctor", doctorSchema)
