@@ -4,6 +4,8 @@
 
 # 🧬 MediQ: Neural Diagnostic & Healthcare Ecosystem
 
+**Explore the Site at (Live Link)**  https://main.d331bz1skb95jo.amplifyapp.com
+
 **MediQ** is a high-performance MERN-stack ecosystem designed to bridge the gap between traditional clinical OPDs and next-generation neural diagnostics. Engineered for the "Digital Bharat" initiative, it provides a secure, obsidian-themed interface for medical professionals and patients.
 
 ---
