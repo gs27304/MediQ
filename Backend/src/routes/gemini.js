@@ -1,15 +1,13 @@
 import express from 'express';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from 'axios'; // Required for ElevenLabs API call
 
 const router = express.Router();
 
-// Initialize the Gemini AI with your API Key from environment variables
-
-
 /**
  * @route   POST /api/v1/gemini/chat
- * @desc    Handles medical queries using Gemini AI
- * @access  Public (or Private if you add auth middleware later)
+ * @desc    Handles medical queries using Gemini AI + ElevenLabs TTS
+ * @access  Public
  */
 router.post('/chat', async (req, res) => {
   try {
@@ -20,10 +18,9 @@ router.post('/chat', async (req, res) => {
       return res.status(400).json({ success: false, message: "No input provided." });
     }
 
-    // Using gemini-1.5-flash for faster response times in a chatbot UI
+    // 1. Initialize Gemini Model
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
-    // Professional system prompt for MediQ Intelligence
     const systemPrompt = `
       You are MediQ Intelligence, a high-end medical AI assistant integrated into a healthcare platform.
       User Query: "${messages}"
@@ -34,14 +31,50 @@ router.post('/chat', async (req, res) => {
       3. CRITICAL: Include a clear disclaimer at the end stating: "Disclaimer: This is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment."
     `;
     
+    // 2. Generate Text Content from Gemini
     const result = await model.generateContent(systemPrompt);
     const response = await result.response;
-    const text = response.text();
+    const botReplyText = response.text();
     
-    // Returns botReply to match your Chatbot.jsx state logic
+    // 3. Initialize ElevenLabs Voice Processing
+    let audioBase64 = null;
+
+    try {
+      // We strip the disclaimer from the spoken audio to keep the voice response concise
+      const speechText = botReplyText.split("Disclaimer:")[0].trim();
+
+      const ttsResponse = await axios({
+        method: 'post',
+        url: `https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVEN_LABS_VOICE_ID}`,
+        headers: {
+          'accept': 'audio/mpeg',
+          'xi-api-key': process.env.ELEVEN_LABS_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        data: {
+          text: speechText,
+          model_id: "eleven_monolingual_v1", // Better for Indian accents/context
+          voice_settings: { 
+            stability: 0.5, 
+            similarity_boost: 0.75 
+          }
+        },
+        responseType: 'arraybuffer', // Receive binary audio data
+      });
+
+      // Convert binary buffer to Base64 string for JSON transfer
+      audioBase64 = Buffer.from(ttsResponse.data, 'binary').toString('base64');
+
+    } catch (ttsError) {
+      console.error("ElevenLabs TTS Error:", ttsError.message);
+      // We don't throw here so the user still gets the text reply even if voice fails
+    }
+
+    // 4. Return both Text and Audio Data to Chatbot.jsx
     res.status(200).json({ 
       success: true,
-      botReply: text 
+      botReply: botReplyText,
+      audioData: audioBase64 
     });
 
   } catch (error) {

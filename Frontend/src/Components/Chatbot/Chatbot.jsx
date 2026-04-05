@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ChatbotIcon from "../../assets/images/chatbot-icon.png";
 import { BASE_URL } from '../../config';
+import { BiVolumeFull, BiVolumeMute } from "react-icons/bi"; // For Mute/Unmute toggle
 
 const symptomMedicineMapping = {
   "headache": "Commonly managed with Paracetamol or Ibuprofen. Ensure rest and hydration.",
@@ -16,6 +17,7 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [currentOption, setCurrentOption] = useState(null);
+  const [isMuted, setIsMuted] = useState(false); // Indian Dark Mode: Control for voice
   
   const chatEndRef = useRef(null);
 
@@ -26,6 +28,19 @@ const Chatbot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Function to play ElevenLabs Audio
+  const playVoice = (base64Audio) => {
+    if (isMuted || !base64Audio) return;
+    
+    try {
+      const audioSrc = `data:audio/mp3;base64,${base64Audio}`;
+      const audio = new Audio(audioSrc);
+      audio.play();
+    } catch (err) {
+      console.error("Audio playback failed:", err);
+    }
+  };
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -39,6 +54,7 @@ const Chatbot = () => {
       const lowerCaseInput = currentInput.toLowerCase().trim();
       const medicine = symptomMedicineMapping[lowerCaseInput] || 'No matching data found in local pharmacopoeia.';
       setMessages(prev => [...prev, { text: medicine, sender: 'bot' }]);
+      // Note: Local mapping doesn't have voice unless you call a TTS route for it too.
     } else {
       try {
         const response = await fetch(`${BASE_URL}/gemini/chat`, {
@@ -51,6 +67,11 @@ const Chatbot = () => {
           const data = await response.json();
           const botMessage = { text: data.botReply || data.message, sender: 'bot' };
           setMessages(prev => [...prev, botMessage]);
+          
+          // PLAY ELEVEN LABS VOICE
+          if (data.audioData) {
+            playVoice(data.audioData);
+          }
         } else {
           setMessages(prev => [...prev, { text: 'Neural link interrupted. System status: 500.', sender: 'bot' }]);
         }
@@ -69,9 +90,6 @@ const Chatbot = () => {
     setIsFullScreen(!isFullScreen);
   };
 
-  // Adjusted container logic:
-  // Standard: w-[350px] h-[500px]
-  // FullScreen: 'top-[80px]' (to avoid header), 'bottom-4', 'left-4', 'right-4'
   const containerClasses = isOpen 
     ? isFullScreen 
       ? 'fixed top-[90px] bottom-6 left-6 right-6 z-50' 
@@ -84,7 +102,7 @@ const Chatbot = () => {
       {!isOpen && (
         <div 
           onClick={() => setIsOpen(true)}
-          className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:scale-110 transition-transform duration-300 border-2 border-white/20"
+          className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full flex items-center justify-center cursor-pointer shadow-[0_0_20px_rgba(99,102,241,0.5)] hover:scale-110 transition-transform duration-300 border-2 border-white/20"
         >
           <img src={ChatbotIcon} alt="MediQ Bot" className="w-10 h-10 rounded-full" />
         </div>
@@ -93,23 +111,32 @@ const Chatbot = () => {
       {isOpen && (
         <div className="flex flex-col h-full bg-[#0f172a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
           
+          {/* Header */}
           <div className="p-4 bg-white/5 border-b border-white/10 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <img src={ChatbotIcon} alt="Bot" className="w-8 h-8 rounded-full border border-cyan-400" />
+                <img src={ChatbotIcon} alt="Bot" className="w-8 h-8 rounded-full border border-indigo-400" />
                 <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-[#0f172a]"></div>
               </div>
               <div>
-                <h3 className="text-white text-sm font-bold">MediQ Intelligence</h3>
-                <p className="text-[10px] text-cyan-400 uppercase tracking-tighter">AI Systems Online</p>
+                <h3 className="text-white text-sm font-bold tracking-tight">MediQ Intelligence</h3>
+                <p className="text-[10px] text-indigo-400 uppercase tracking-tighter font-black">Voice-Enabled AI</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Voice Toggle */}
+              <button 
+                onClick={() => setIsMuted(!isMuted)}
+                className="text-gray-400 hover:text-indigo-400 transition-colors p-1"
+                title={isMuted ? "Unmute Voice" : "Mute Voice"}
+              >
+                {isMuted ? <BiVolumeMute size={20}/> : <BiVolumeFull size={20}/>}
+              </button>
+
               <button 
                 onClick={toggleFullScreen}
-                className="text-gray-400 hover:text-cyan-400 transition-colors p-1"
-                title={isFullScreen ? "Exit Full Screen" : "Full Screen"}
+                className="text-gray-400 hover:text-indigo-400 transition-colors p-1"
               >
                 {isFullScreen ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
@@ -120,7 +147,7 @@ const Chatbot = () => {
 
               <button 
                 onClick={() => { setIsOpen(false); setIsFullScreen(false); setCurrentOption(null); }}
-                className="text-gray-400 hover:text-white transition-colors p-1"
+                className="text-gray-400 hover:text-red-500 transition-colors p-1"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
@@ -130,36 +157,36 @@ const Chatbot = () => {
           <div className="flex-1 overflow-hidden flex flex-col">
             {!currentOption && (
               <div className="p-6 space-y-3 flex flex-col justify-center h-full max-w-md mx-auto w-full">
-                <p className="text-gray-400 text-xs text-center mb-4 uppercase tracking-widest">Select Operations Module</p>
+                <p className="text-slate-500 text-[10px] font-black text-center mb-4 uppercase tracking-[0.2em]">Select Neural Module</p>
                 <button
                   onClick={() => handleOptionSelect('symptomChecker')}
-                  className="group flex items-center justify-between w-full bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-500/50 p-4 rounded-xl transition-all duration-300"
+                  className="group flex items-center justify-between w-full bg-[#0f172a] hover:bg-indigo-500/10 border border-slate-800 hover:border-indigo-500/50 p-5 rounded-2xl transition-all duration-300 shadow-lg"
                 >
-                  <span className="text-white font-medium">Neural Symptom Scan</span>
-                  <span className="text-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                  <span className="text-slate-200 font-bold tracking-tight">Neural Symptom Scan</span>
+                  <span className="text-indigo-500 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">→</span>
                 </button>
                 <button
                   onClick={() => handleOptionSelect('searchMedicine')}
-                  className="group flex items-center justify-between w-full bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/50 p-4 rounded-xl transition-all duration-300"
+                  className="group flex items-center justify-between w-full bg-[#0f172a] hover:bg-emerald-500/10 border border-slate-800 hover:border-emerald-500/50 p-5 rounded-2xl transition-all duration-300 shadow-lg"
                 >
-                  <span className="text-white font-medium">Pharma Intelligence</span>
-                  <span className="text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                  <span className="text-slate-200 font-bold tracking-tight">Pharma Intelligence</span>
+                  <span className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">→</span>
                 </button>
                 <button
                   onClick={() => handleOptionSelect('faqs')}
-                  className="group flex items-center justify-between w-full bg-white/5 hover:bg-purple-500/20 border border-white/10 hover:border-purple-500/50 p-4 rounded-xl transition-all duration-300"
+                  className="group flex items-center justify-between w-full bg-[#0f172a] hover:bg-slate-700/30 border border-slate-800 hover:border-slate-600 p-5 rounded-2xl transition-all duration-300 shadow-lg"
                 >
-                  <span className="text-white font-medium">System Protocols (FAQs)</span>
-                  <span className="text-purple-500 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                  <span className="text-slate-200 font-bold tracking-tight">System Protocols (FAQs)</span>
+                  <span className="text-slate-400 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">→</span>
                 </button>
               </div>
             )}
 
             {currentOption && (
-              <div className="flex flex-col h-full">
+              <div className="flex flex-col h-full bg-[#0f172a]">
                 <button 
                   onClick={() => setCurrentOption(null)}
-                  className="text-[10px] text-cyan-400 p-2 hover:bg-white/5 w-fit ml-2 mt-2 rounded transition-colors uppercase font-bold tracking-widest"
+                  className="text-[10px] text-indigo-400 p-3 hover:bg-white/5 w-fit ml-2 mt-2 rounded-xl transition-colors uppercase font-black tracking-widest"
                 >
                   ← Return to Hub
                 </button>
@@ -167,19 +194,19 @@ const Chatbot = () => {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                   {currentOption === 'faqs' ? (
                     <div className="space-y-4 max-w-2xl mx-auto w-full">
-                      <div className="p-3 bg-white/5 border border-white/10 rounded-lg">
-                        <p className="text-cyan-400 text-xs font-bold mb-1">Q: Interface Purpose?</p>
-                        <p className="text-gray-300 text-xs">A: MediQ AI is designed for preliminary neural scanning and pharmacology data retrieval.</p>
+                      <div className="p-4 bg-[#1e293b] border border-slate-800 rounded-2xl shadow-xl">
+                        <p className="text-indigo-400 text-[10px] font-black uppercase tracking-widest mb-1">Interface Purpose?</p>
+                        <p className="text-slate-300 text-sm leading-relaxed font-medium">MediQ AI is optimized for Bharat-centric neural scanning and pharmacology data retrieval.</p>
                       </div>
                     </div>
                   ) : (
                     <div className={isFullScreen ? "max-w-4xl mx-auto w-full" : ""}>
                       {messages.map((msg, index) => (
-                        <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
-                          <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${
+                        <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} mb-6`}>
+                          <div className={`max-w-[85%] p-4 rounded-[1.5rem] text-sm font-medium leading-relaxed ${
                             msg.sender === 'user' 
-                            ? 'bg-blue-600 text-white rounded-tr-none shadow-lg' 
-                            : 'bg-white/10 text-gray-200 border border-white/10 rounded-tl-none'
+                            ? 'bg-indigo-600 text-white rounded-tr-none shadow-xl shadow-indigo-900/20' 
+                            : 'bg-[#1e293b] text-slate-200 border border-slate-800 rounded-tl-none shadow-inner'
                           }`}>
                             {msg.text}
                           </div>
@@ -191,19 +218,19 @@ const Chatbot = () => {
                 </div>
 
                 {currentOption !== 'faqs' && (
-                  <div className="p-4 bg-white/5 border-t border-white/10">
-                    <div className={`flex gap-2 ${isFullScreen ? "max-w-4xl mx-auto w-full" : ""}`}>
+                  <div className="p-4 bg-[#1e293b]/50 border-t border-slate-800 backdrop-blur-md">
+                    <div className={`flex gap-3 ${isFullScreen ? "max-w-4xl mx-auto w-full" : ""}`}>
                       <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                         placeholder={currentOption === 'searchMedicine' ? "Search Pharmacopoeia..." : "Enter Neural Feed..."}
-                        className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-xs focus:border-cyan-500 outline-none transition-all placeholder:text-gray-600"
+                        className="flex-1 bg-[#0f172a] border border-slate-700 rounded-xl px-5 py-3 text-white text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all placeholder:text-slate-600"
                       />
                       <button
                         onClick={handleSend}
-                        className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-lg"
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-900/40 active:scale-95"
                       >
                         Process
                       </button>
