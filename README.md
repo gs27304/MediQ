@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/gs27304/MediQ/Frontend/bannar.gif" />
+  <img src="./Frontend/bannar.gif" />
 </p>
 
 # 🧬 MediQ: Neural Diagnostic & Healthcare Ecosystem
